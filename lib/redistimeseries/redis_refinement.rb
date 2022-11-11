@@ -3,19 +3,21 @@ module Redistimeseries
   # refine the Redis class to add ts_* methods
   module RedisRefinement
     refine Redis do
-      def ts_create(key:, retention: nil, uncompressed: false, labels: [])
+      def ts_create(key:, retention: nil, uncompressed: false, labels: [], duplicate_policy: nil)
         cmd = ['TS.CREATE', key]
         cmd += ['RETENTION', retention] if retention
         cmd += ['UNCOMPRESSED'] if uncompressed
         cmd += ['LABELS'] if labels.any?
+        cmd += ['DUPLICATE_POLICY'] if duplicate_policy
         cmd += labels if labels.any?
         _ts_call(cmd)
       end
 
-      def ts_add(key:, timestamp: "*", value:, retention: nil, labels: [])
+      def ts_add(key:, timestamp: "*", value:, retention: nil, labels: [], on_duplicate: nil)
         cmd = ['TS.ADD', key, timestamp, value]
         cmd += ['RETENTION', retention] if retention
         cmd += ['LABELS'] if labels.any?
+        cmd += ['ON_DUPLICATE', on_duplicate] if on_duplicate
         cmd += labels if labels.any?
         _ts_call(cmd)
       end
