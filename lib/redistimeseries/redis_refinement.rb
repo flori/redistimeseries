@@ -13,6 +13,16 @@ module Redistimeseries
         _ts_call(cmd)
       end
 
+      def ts_alter(key:, retention: nil, uncompressed: false, labels: [], duplicate_policy: nil)
+        cmd = ['TS.ALTER', key]
+        cmd += ['RETENTION', retention] if retention
+        cmd += ['UNCOMPRESSED'] if uncompressed
+        cmd += ['LABELS'] if labels.any?
+        cmd += ['DUPLICATE_POLICY'] if duplicate_policy
+        cmd += labels if labels.any?
+        _ts_call(cmd)
+      end
+
       def ts_add(key:, timestamp: "*", value:, retention: nil, labels: [], on_duplicate: nil)
         cmd = ['TS.ADD', key, timestamp, value]
         cmd += ['RETENTION', retention] if retention
